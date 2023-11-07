@@ -56,6 +56,16 @@ async function run() {
         })
         // get jobs data end
 
+        // post jobs data
+        app.post('/jobs', async (req, res) => {
+            const job = req.body;
+            const result = await IberCollection.insertOne(job);
+            res.send(result);
+            console.log(result);
+        })
+        // post jobs data end
+
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
