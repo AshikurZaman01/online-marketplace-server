@@ -34,6 +34,18 @@ async function run() {
         await client.connect();
 
 
+
+        // DB Name
+        const categoryCollection2 = client.db("Iber").collection("categories");
+
+        // get category data
+        app.get('/categories', async (req, res) => {
+            const categories = await categoryCollection2.find().toArray();
+            res.send(categories);
+            console.log(categories);
+        })
+        // get category data end
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
