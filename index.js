@@ -33,7 +33,8 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
 
-
+        // DB Name
+        const IberCollection = client.db("Iber").collection("jobs");
 
         // DB Name
         const categoryCollection2 = client.db("Iber").collection("categories");
@@ -45,6 +46,16 @@ async function run() {
             console.log(categories);
         })
         // get category data end
+
+
+        // get jobs data
+        app.get('/jobs', async (req, res) => {
+            const jobs = await IberCollection.find().toArray();
+            res.send(jobs);
+            console.log(jobs);
+        })
+        // get jobs data end
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
