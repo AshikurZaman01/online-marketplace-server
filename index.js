@@ -102,11 +102,6 @@ async function run() {
         })
         // Patch jobs data end
 
-
-
-
-
-
         // get  jobs data by id
         app.get('/jobs/:id', async (req, res) => {
             const id = req.params.id;
@@ -131,6 +126,22 @@ async function run() {
         })
         // post bid Data☻ end
 
+        // get specific bids Data by email
+        app.get('/bids', async (req, res) => {
+
+            let query = {};
+            const auther_email = req.query.auther_email;
+
+            if (auther_email) {
+                query.auther_email = auther_email
+            }
+
+            const result = await bidsCollection.find(query).toArray();
+            res.send(result);
+            console.log(result);
+        }
+        )
+        // get specific bids Data by email end
 
 
 
