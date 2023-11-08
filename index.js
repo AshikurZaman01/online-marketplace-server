@@ -16,7 +16,7 @@ app.listen(port, () => {
 })
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = "mongodb+srv://Iber:Qlc5jPZbeAIf121w@cluster0.q0gttvx.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -64,6 +64,16 @@ async function run() {
             console.log(result);
         })
         // post jobs data end
+
+
+        // get  jobs data by id
+        app.get('/jobs/:id', async (req, res) => {
+            const id = req.params.id;
+            const job = await IberCollection.findOne({ _id: new ObjectId(id) });
+            res.send(job);
+            console.log(job);
+        })
+        // get data end
 
 
 
