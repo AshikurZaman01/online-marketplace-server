@@ -83,6 +83,16 @@ async function run() {
         })
         // post jobs data end
 
+        // Delete jobs data
+        app.delete('/jobs/:id', async(req , res)=>{
+            const id = req.params.id;
+            const result = await IberCollection.deleteOne({_id: new ObjectId(id)});
+            res.send(result);
+            console.log(result);
+        })
+        // Delete jobs data end
+
+
 
 
 
