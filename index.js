@@ -48,6 +48,24 @@ async function run() {
         // get category data end
 
 
+        // get specific jobs Data by email
+        app.get('/jobs', async (req, res) => {
+
+            let query = {};
+            const email = req.query.email;
+
+            if (email) {
+                query.email = email;
+            }
+
+            const job = await IberCollection.find(query).toArray();
+            res.send(job)
+            console.log(job)
+        }
+        )
+        // get specific jobs Data by email end
+
+
         // get jobs data
         app.get('/jobs', async (req, res) => {
             const jobs = await IberCollection.find().toArray();
@@ -66,6 +84,8 @@ async function run() {
         // post jobs data end
 
 
+
+
         // get  jobs data by id
         app.get('/jobs/:id', async (req, res) => {
             const id = req.params.id;
@@ -75,10 +95,11 @@ async function run() {
         })
         // get data end
 
+
+
+
         // DB Collection
-
         const bidsCollection = client.db("Iber").collection("bids");
-
 
         // post bid Data
         app.post('/bids', async (req, res) => {
@@ -88,7 +109,9 @@ async function run() {
             console.log(result);
         })
         // post bid Data☻ end
-        
+
+
+
 
 
 
