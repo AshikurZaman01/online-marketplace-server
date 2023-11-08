@@ -75,6 +75,21 @@ async function run() {
         })
         // get data end
 
+        // DB Collection
+
+        const bidsCollection = client.db("Iber").collection("bids");
+
+
+        // post bid Data
+        app.post('/bids', async (req, res) => {
+            const bid = req.body;
+            const result = await bidsCollection.insertOne(bid);
+            res.send(result);
+            console.log(result);
+        })
+        // post bid Data☻ end
+        
+
 
 
         // Send a ping to confirm a successful connection
