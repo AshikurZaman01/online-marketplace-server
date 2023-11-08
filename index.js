@@ -84,13 +84,24 @@ async function run() {
         // post jobs data end
 
         // Delete jobs data
-        app.delete('/jobs/:id', async(req , res)=>{
+        app.delete('/jobs/:id', async (req, res) => {
             const id = req.params.id;
-            const result = await IberCollection.deleteOne({_id: new ObjectId(id)});
+            const result = await IberCollection.deleteOne({ _id: new ObjectId(id) });
             res.send(result);
             console.log(result);
         })
         // Delete jobs data end
+
+        // Patch jobs data
+        app.patch('/jobs/:id', async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            const result = await IberCollection.updateOne({ _id: new ObjectId(id) }, { $set: data });
+            res.send(result);
+            console.log(result);
+        })
+        // Patch jobs data end
+
 
 
 
