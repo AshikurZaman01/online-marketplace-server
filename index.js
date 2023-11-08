@@ -1,10 +1,16 @@
 const express = require('express')
 const cors = require('cors')
+var jwt = require('jsonwebtoken');
+var cookieParser = require('cookie-parser');
 const app = express()
 const port = process.env.PORT || 3000
 
-app.use(cors())
+app.use(cors({
+    origin: ['http://localhost:5173'],
+    credentials: true,
+}))
 app.use(express.json())
+app.use(cookieParser())
 
 
 app.get('/', (req, res) => {
@@ -12,9 +18,30 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(`Iber Server is running on port ${port}`)
+    console.log(`Iber Server is running on port ${port}`);
+
 })
 
+
+const logger = async (req, res, next) => {
+    console.log('called', req.host, req.originalUrl);
+    next();
+}
+const verifiToken = async (req, res, next) => {
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(401).json({ message: 'No token, authorization denied' });
+    }
+    jwt.verify(token, 'secret', (err, decoded) => {
+        if (err) {
+            return res.status(500).json({ message: 'Failed to authenticate token' });
+        }
+        console.log(decoded)
+        req.user = decoded;
+        next()
+    })
+   
+}
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = "mongodb+srv://Iber:Qlc5jPZbeAIf121w@cluster0.q0gttvx.mongodb.net/?retryWrites=true&w=majority";
@@ -39,8 +66,24 @@ async function run() {
         // DB Name
         const categoryCollection2 = client.db("Iber").collection("categories");
 
+        // AUTH 
+        app.post('/jwt', logger, async (req, res) => {
+            const user = req.body;
+            const token = jwt.sign(user, 'secret', { expiresIn: '1h' });
+
+            res
+                .cookie('token', token, {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: 'none',
+
+                })
+                .send({ success: true })
+        })
+
+
         // get category data
-        app.get('/categories', async (req, res) => {
+        app.get('/categories', logger, async (req, res) => {
             const categories = await categoryCollection2.find().toArray();
             res.send(categories);
             console.log(categories);
@@ -49,7 +92,7 @@ async function run() {
 
 
         // get specific jobs Data by email
-        app.get('/jobs', async (req, res) => {
+        app.get('/jobs', logger, async (req, res) => {
 
             let query = {};
             const email = req.query.email;
@@ -67,7 +110,7 @@ async function run() {
 
 
         // get jobs data
-        app.get('/jobs', async (req, res) => {
+        app.get('/jobs', logger, async (req, res) => {
             const jobs = await IberCollection.find().toArray();
             res.send(jobs);
             console.log(jobs);
@@ -84,7 +127,7 @@ async function run() {
         // post jobs data end
 
         // Delete jobs data
-        app.delete('/jobs/:id', async (req, res) => {
+        app.delete('/jobs/:id', logger, async (req, res) => {
             const id = req.params.id;
             const result = await IberCollection.deleteOne({ _id: new ObjectId(id) });
             res.send(result);
@@ -118,7 +161,7 @@ async function run() {
         const bidsCollection = client.db("Iber").collection("bids");
 
         // post bid Data
-        app.post('/bids', async (req, res) => {
+        app.post('/bids', logger, async (req, res) => {
             const bid = req.body;
             const result = await bidsCollection.insertOne(bid);
             res.send(result);
